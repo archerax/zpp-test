@@ -1,28 +1,25 @@
-import React from 'react';
-import { TransformWrapper, TransformComponent } from "react-zoom-pan-pinch";
+import { Tile, VirtualCanvas } from './VirtualCanvas';
 
 const numStrips = 25;
 const stripWidth = 2500;
 const stripHeight = 1000;
 
-const strips: { y: number; colour: string }[]  = [];
+const tiles: Tile[]  = [];
 for (let i = 0; i < numStrips; i++) {
-  strips.push({ y: i * stripHeight, colour: `hsl(${i * 360 / numStrips}, 75%, 50%)` });
+  tiles.push({
+    x: 0,
+    y: i * stripHeight,
+    w: stripWidth,
+    h: stripHeight,
+    key: i * stripHeight,
+    content: <div style={{ width: "100%", height: "100%", backgroundColor: `hsl(${i * 360 / numStrips}, 75%, 50%)` }}></div>
+  });
 }
 
 function App() {
   return (
     <div style={{ width: "100%", height: "100%" }}>
-      <TransformWrapper minScale={0.1} maxScale={2}>
-        <TransformComponent wrapperStyle={{ width: "100%", height: "100%" }}>
-          {
-            strips.map(s => (
-              <div style={{ position: "absolute", top: `${s.y}px`, height: `${stripHeight}px`, width: `${stripWidth}px`, backgroundColor: s.colour }}></div>
-            ))
-          }
-          <div style={{ width: `${stripWidth}px`, height: `${numStrips*stripHeight}px` }}></div>
-        </TransformComponent>
-      </TransformWrapper>
+      <VirtualCanvas w={2500} h={numStrips*stripHeight} tiles={tiles} />
     </div>
   );
 }
