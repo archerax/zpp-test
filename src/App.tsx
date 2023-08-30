@@ -1,25 +1,31 @@
 import { Tile, VirtualCanvas } from './VirtualCanvas';
 
-const numStrips = 25;
-const stripWidth = 2500;
-const stripHeight = 1000;
+const numTilesX = 25;
+const numTilesY = 1000;
+const tileSizeX = 100;
+const tileSizeY = 1000;
 
 const tiles: Tile[]  = [];
-for (let i = 0; i < numStrips; i++) {
-  tiles.push({
-    x: 0,
-    y: i * stripHeight,
-    w: stripWidth,
-    h: stripHeight,
-    key: i * stripHeight,
-    content: <div style={{ width: "100%", height: "100%", backgroundColor: `hsl(${i * 360 / numStrips}, 75%, 50%)` }}></div>
-  });
+for (let y = 0; y < numTilesY; y++) {
+  for (let x = 0; x < numTilesX; x++) {
+    const left = x * tileSizeX;
+    const top = y * tileSizeY;
+    const colour = `hsl(${y * 360 / 100 + x * 10}, 75%, 50%)`;
+    tiles.push({
+      left: left,
+      top: top,
+      width: tileSizeX,
+      height: tileSizeY,
+      key: `(${left},${top})`,
+      content: <div style={{ width: "100%", height: "100%", backgroundColor: colour }}></div>
+    });
+  }
 }
 
 function App() {
   return (
     <div style={{ width: "100%", height: "100%" }}>
-      <VirtualCanvas w={2500} h={numStrips*stripHeight} tiles={tiles} />
+      <VirtualCanvas contentWidth={numTilesX*tileSizeX} contentHeight={numTilesY*tileSizeY} tiles={tiles} />
     </div>
   );
 }
