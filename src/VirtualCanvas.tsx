@@ -1,4 +1,4 @@
-import { ReactNode, SyntheticEvent, useCallback, useRef, useState } from 'react';
+import { ReactNode, SyntheticEvent, useCallback, useEffect, useRef, useState } from 'react';
 import { TransformWrapper, TransformComponent, ReactZoomPanPinchRef } from "react-zoom-pan-pinch";
 
 const preloadSize = 1000;
@@ -25,6 +25,21 @@ export function VirtualCanvas({ contentWidth, contentHeight, tiles }: VirtualCan
 
   const [visibleTiles, setVisibleTiles] = useState<Tile[]>([]);
 
+  useEffect(() => {
+    const wrapper = scrollWrapperRef.current;
+    if (wrapper) {
+      const observer = new ResizeObserver(() => {
+        if (zoomPanPinchComponentRef.current) {
+          zoomPanPinchComponentRef.current.zoomIn(0, 0, undefined); // zoom by 0% to force zpp to recalculate
+        }
+      });
+      observer.observe(wrapper);
+      return () => {
+        observer.disconnect();
+      };
+    }
+  }, [scrollWrapperRef,zoomPanPinchComponentRef]);
+  
   const onScroll = (event: SyntheticEvent<HTMLDivElement>) => {
     if (zoomPanPinchComponentRef.current) {
       const scrollX = Math.round(event.currentTarget.scrollLeft);
@@ -75,8 +90,6 @@ export function VirtualCanvas({ contentWidth, contentHeight, tiles }: VirtualCan
     }
   }, [contentWidth, contentHeight, tiles]);
 
-  //console.log("Render strips: %o", visibleTiles);
-
   return (
     <div style={{ position: "relative", width: "100%", height: "100%", overflow: "scroll" }} onScroll={onScroll} ref={scrollWrapperRef}>
       <div style={{ position: "absolute", left: "0px", top: "0px" }} ref={scrollPaddingRef}></div>
@@ -86,6 +99,7 @@ export function VirtualCanvas({ contentWidth, contentHeight, tiles }: VirtualCan
         disablePadding={true}
         onInit={onTransformed}
         onTransformed={onTransformed}
+        customTransform={(x, y, s) => `translate3d(${Math.round(x)}px, ${Math.round(y)}px, 0) scale(${s})`}
         ref={zoomPanPinchComponentRef}>
         <TransformComponent
           wrapperStyle={{ position: "sticky", left: "0px", top: "0px", width: "100%", height: "100%" }}
