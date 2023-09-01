@@ -97,6 +97,7 @@ export function VirtualCanvas({ contentWidth, contentHeight, tiles }: VirtualCan
         minScale={0.1}
         maxScale={2}
         disablePadding={true}
+        wheel={{ activationKeys: ["Control"] }}
         onInit={onTransformed}
         onTransformed={onTransformed}
         customTransform={(x, y, s) => `translate3d(${Math.round(x)}px, ${Math.round(y)}px, 0) scale(${s})`}
